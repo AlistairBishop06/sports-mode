@@ -1,0 +1,5 @@
+requests>=2.32.0
+beautifulsoup4>=4.12.0
+
+# Make sure you have Python 3.10+ installed on Windows.
+
