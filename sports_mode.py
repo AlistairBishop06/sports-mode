@@ -6,6 +6,7 @@ import requests
 from PIL import Image, ImageTk
 import io
 import os
+import math
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -34,24 +35,93 @@ def fetch_football_scores(league_code):
     try:
         r = requests.get(url, headers=HEADERS, timeout=10)
         data = r.json()
-    except:
+    except Exception:
         return []
 
     matches = []
     for event in data.get("events", []):
-        comp = event["competitions"][0]
-        teams = comp["competitors"]
-        home = next(t for t in teams if t["homeAway"] == "home")
-        away = next(t for t in teams if t["homeAway"] == "away")
-        matches.append({
-            "home_name": home["team"]["displayName"],
-            "away_name": away["team"]["displayName"],
-            "home_score": home["score"],
-            "away_score": away["score"],
-            "home_logo": home["team"]["logo"],
-            "away_logo": away["team"]["logo"]
-        })
+        comp = event.get("competitions", [{}])[0]
+        teams = comp.get("competitors", [])
+        if len(teams) < 2:
+            continue
+        try:
+            home = next(t for t in teams if t.get("homeAway") == "home")
+            away = next(t for t in teams if t.get("homeAway") == "away")
+        except StopIteration:
+            continue
+        matches.append(
+            {
+                "home_name": home.get("team", {}).get("displayName", "Home"),
+                "away_name": away.get("team", {}).get("displayName", "Away"),
+                "home_score": home.get("score", "0"),
+                "away_score": away.get("score", "0"),
+                "home_logo": (home.get("team", {}) or {}).get("logo"),
+                "away_logo": (away.get("team", {}) or {}).get("logo"),
+            }
+        )
     return matches
+
+
+def fetch_last5_for_team(league_code, team_id):
+    """
+    Fetch last 5 results (W/L/D) for a single team from its schedule.
+    """
+    if not team_id:
+        return []
+
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/teams/{team_id}/schedule"
+
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=10)
+        data = r.json()
+    except Exception:
+        return []
+
+    events = data.get("events", [])
+    # Sort by date to ensure correct order
+    try:
+        events = sorted(events, key=lambda e: e.get("date", ""))
+    except Exception:
+        pass
+
+    results = []
+    str_team_id = str(team_id)
+
+    for event in events:
+        competitions = event.get("competitions") or []
+        if not competitions:
+            continue
+        comp = competitions[0]
+        status = (comp.get("status") or {}).get("type") or {}
+        if not status.get("completed"):
+            continue
+
+        competitors = comp.get("competitors") or []
+        me = None
+        opp = None
+        for c in competitors:
+            tid = str((c.get("team") or {}).get("id"))
+            if tid == str_team_id:
+                me = c
+            else:
+                opp = c if opp is None else opp
+        if not me or not opp:
+            continue
+
+        try:
+            my_score = float(me.get("score", 0))
+            opp_score = float(opp.get("score", 0))
+        except Exception:
+            continue
+
+        if my_score > opp_score:
+            results.append("W")
+        elif my_score < opp_score:
+            results.append("L")
+        else:
+            results.append("D")
+
+    return results[-5:]
 
 def fetch_table(league_code):
 
@@ -60,21 +130,20 @@ def fetch_table(league_code):
     try:
         r = requests.get(url, headers=HEADERS, timeout=10)
         data = r.json()
-    except:
+    except Exception:
         return []
 
     table = []
 
     try:
-
         # ESPN sometimes nests standings differently
         entries = None
 
         if "children" in data:
             try:
                 entries = data["children"][0]["standings"]["entries"]
-            except:
-                pass
+            except Exception:
+                entries = None
 
         if not entries and "standings" in data:
             entries = data["standings"].get("entries", [])
@@ -82,31 +151,75 @@ def fetch_table(league_code):
         if not entries:
             return []
 
-        for entry in entries:
+        for idx, entry in enumerate(entries, start=1):
+            team_info = entry.get("team", {}) or {}
+            team_name = team_info.get("displayName", "Unknown")
+            team_id = team_info.get("id")
 
-            team = entry.get("team", {}).get("displayName", "Unknown")
+            # Team logo (if available)
+            logo_url = None
+            logos = team_info.get("logos") or []
+            if isinstance(logos, list) and logos:
+                logo_url = logos[0].get("href")
+            if not logo_url:
+                logo_url = team_info.get("logo")
 
-            stats = entry.get("stats", [])
+            stats = entry.get("stats", []) or []
 
-            points = next((s.get("value", "0") for s in stats if s.get("name") == "points"), "0")
-            wins = next((s.get("value", "0") for s in stats if s.get("name") == "wins"), "0")
-            losses = next((s.get("value", "0") for s in stats if s.get("name") == "losses"), "0")
-            draws = next((s.get("value", "0") for s in stats if s.get("name") == "ties"), "0")
+            def stat_value(name):
+                for s in stats:
+                    if s.get("name") == name:
+                        return s.get("value")
+                return None
 
-            position = entry.get("rank", "?")
+            def int_stat(name, default=0):
+                v = stat_value(name)
+                try:
+                    if isinstance(v, (int, float)):
+                        return int(v)
+                    return int(v)
+                except Exception:
+                    return default
 
-            table.append({
-                "position": position,
-                "team": team,
-                "points": points,
-                "wins": wins,
-                "losses": losses,
-                "draws": draws
-            })
+            points = int_stat("points")
+            wins = int_stat("wins")
+            losses = int_stat("losses")
+            draws = int_stat("ties")
+            played = int_stat("gamesPlayed", wins + draws + losses)
 
-    except:
+            # Rank is stored as a stat named "rank"
+            rank_val = stat_value("rank")
+            try:
+                if isinstance(rank_val, (int, float)):
+                    position = int(rank_val)
+                else:
+                    position = int(str(rank_val))
+            except Exception:
+                # Fallback to order in list
+                position = idx
+
+            # Last 5 results via team schedule
+            last5 = fetch_last5_for_team(league_code, team_id)
+
+            table.append(
+                {
+                    "position": position,
+                    "team": team_name,
+                    "points": points,
+                    "wins": wins,
+                    "losses": losses,
+                    "draws": draws,
+                    "played": played,
+                    "logo_url": logo_url,
+                    "last5": last5,
+                }
+            )
+
+    except Exception:
         return []
 
+    # Sort by position to be safe
+    table.sort(key=lambda r: r.get("position", 999))
     return table
 
 def fetch_speedway_scores():
@@ -152,6 +265,14 @@ class SportsModeApp:
     # ---------------- Frame Control ----------------
 
     def clear_frame(self):
+        # Stop any scheduled auto-refresh when changing screens
+        if self._refresh_job is not None:
+            try:
+                self.root.after_cancel(self._refresh_job)
+            except Exception:
+                pass
+            self._refresh_job = None
+
         if self.current_frame:
             self.current_frame.destroy()
 
@@ -177,9 +298,9 @@ class SportsModeApp:
         tk.Button(frame, text="Speedway", bg="#d69e2e",
                   command=lambda: self.show_scores("speedway"), **btn_style).pack(pady=20)
 
-        tk.Button(frame, text="Quit", bg="#e53e3e", fg="white",
+        tk.Button(frame, text="OFF", bg="#e53e3e", fg="white",
                   font=("Segoe UI",36,"bold"), width=18, height=2,
-                  command=self.confirm_exit).pack(pady=40)
+                  command=self.confirm_shutdown).pack(pady=40)
 
     # ---------------- Football Menu ----------------
 
@@ -221,7 +342,7 @@ class SportsModeApp:
                   command=lambda: self.show_table(league_code)).pack(pady=20)
 
         tk.Button(frame, text="Back", font=("Segoe UI",28),
-                  command=self.show_football_leagues).pack(pady=40)
+                  command=self.show_main_menu).pack(pady=40)
 
     # ---------------- Scores Display ----------------
 
@@ -244,31 +365,72 @@ class SportsModeApp:
     # ---------------- Table Display ----------------
 
     def show_table(self, league_code):
-
         self.clear_frame()
 
         frame = tk.Frame(self.container, bg="#101010")
         frame.pack(expand=True, fill="both")
-
         self.current_frame = frame
+
+        title = tk.Label(
+            frame,
+            text="League Table",
+            fg="white",
+            bg="#101010",
+            font=("Segoe UI", 44, "bold"),
+        )
+        title.pack(pady=(0, 20))
 
         self.scores_box = tk.Frame(frame, bg="#101010")
         self.scores_box.pack(expand=True, fill="both", padx=40, pady=40)
 
-        tk.Button(
-            frame,
-            text="Back",
-            font=("Segoe UI", 28),
-            command=lambda: self.show_football_submenu(league_code)
-        ).pack(pady=20)
+        bottom_bar = tk.Frame(frame, bg="#101010")
+        bottom_bar.pack(side="bottom", pady=20)
+
+        back_btn = tk.Button(
+            bottom_bar,
+            text="Back to league menu",
+            font=("Segoe UI", 28, "bold"),
+            bg="#4a5568",
+            fg="white",
+            bd=0,
+            width=18,
+            height=2,
+            activebackground="#2d3748",
+            activeforeground="white",
+            command=self.show_main_menu,
+        )
+        back_btn.pack(side="left", padx=10)
+
+        pages_box = tk.Frame(bottom_bar, bg="#101010")
+        pages_box.pack(side="left", padx=30)
+
+        page_size = 10
 
         def load_table():
-
             table = fetch_table(league_code)
 
-            def render():
+            # Determine promotion and relegation ranges across full table
+            positions = []
+            for row in table:
+                try:
+                    positions.append(int(row["position"]))
+                except Exception:
+                    continue
+            max_pos = max(positions) if positions else len(table)
 
+            def row_bg(pos: int) -> str:
+                # Top 4: promotion / Europe (green), bottom 3: relegation (red)
+                if pos <= 4:
+                    return "#22543d"  # greenish
+                if pos > max_pos - 3:
+                    return "#742a2a"  # reddish
+                return "#1a202c"  # neutral dark row
+
+            def render_page(page_index: int):
+                # Clear current rows and page buttons
                 for w in self.scores_box.winfo_children():
+                    w.destroy()
+                for w in pages_box.winfo_children():
                     w.destroy()
 
                 if not table:
@@ -277,36 +439,131 @@ class SportsModeApp:
                         text="Table data unavailable",
                         fg="white",
                         bg="#101010",
-                        font=("Segoe UI", 28)
+                        font=("Segoe UI", 28),
                     ).pack(pady=40)
                     return
 
-                for row in table:
-
-                    try:
-                        position = int(row["position"])
-                    except:
-                        position = 999
-
-                    zone = ""
-
-                    if position <= 4:
-                        zone = "🟢"
-                    elif position >= 18:
-                        zone = "🔴"
-
+                # Headers
+                headers = ["Pos", "Team", "GP", "W", "D", "L", "Pts", "Last 5"]
+                for col, text in enumerate(headers):
                     tk.Label(
                         self.scores_box,
-                        text=f"{row['position']} {zone}  {row['team']} "
-                            f"P:{row['points']} W:{row['wins']} "
-                            f"D:{row['draws']} L:{row['losses']}",
-                        fg="white",
+                        text=text,
+                        fg="#cbd5f5",
                         bg="#101010",
-                        font=("Segoe UI", 26),
-                        anchor="w"
-                    ).pack(fill="x", pady=6)
+                        font=("Segoe UI", 22, "bold"),
+                        anchor="w",
+                    ).grid(row=0, column=col, padx=8, pady=(0, 10), sticky="w")
 
-            self.root.after(0, render)
+                # Slice rows for this page
+                start = page_index * page_size
+                end = start + page_size
+                page_rows = table[start:end]
+
+                for r_index, row in enumerate(page_rows, start=1):
+                    try:
+                        pos_int = int(row["position"])
+                    except Exception:
+                        pos_int = 999
+
+                    bg = row_bg(pos_int)
+                    fg = "white"
+
+                    # Position (global)
+                    tk.Label(
+                        self.scores_box,
+                        text=str(row["position"]),
+                        fg=fg,
+                        bg=bg,
+                        font=("Segoe UI", 22),
+                        anchor="w",
+                        width=4,
+                    ).grid(row=r_index, column=0, padx=8, pady=4, sticky="w")
+
+                    # Team name + logo
+                    team_cell = tk.Frame(self.scores_box, bg=bg)
+                    team_cell.grid(row=r_index, column=1, padx=8, pady=4, sticky="w")
+
+                    logo_img = None
+                    logo_url = row.get("logo_url")
+                    if logo_url:
+                        logo_img = self.get_logo(logo_url)
+                    if logo_img:
+                        tk.Label(team_cell, image=logo_img, bg=bg).pack(side="left", padx=(0, 8))
+
+                    tk.Label(
+                        team_cell,
+                        text=row["team"],
+                        fg=fg,
+                        bg=bg,
+                        font=("Segoe UI", 22),
+                        anchor="w",
+                    ).pack(side="left")
+
+                    # Basic stats columns (already provided)
+                    stats_values = [
+                        str(row.get("played", 0)),
+                        str(row["wins"]),
+                        str(row["draws"]),
+                        str(row["losses"]),
+                        str(row["points"]),
+                    ]
+
+                    for c_offset, value in enumerate(stats_values):
+                        col_index = 2 + c_offset
+                        tk.Label(
+                            self.scores_box,
+                            text=value,
+                            fg=fg,
+                            bg=bg,
+                            font=("Segoe UI", 22),
+                            anchor="w",
+                            width=4,
+                        ).grid(row=r_index, column=col_index, padx=8, pady=4, sticky="w")
+
+                    # Last 5 form as coloured dots
+                    form_cell = tk.Frame(self.scores_box, bg=bg)
+                    form_cell.grid(row=r_index, column=7, padx=8, pady=4, sticky="w")
+
+                    last5 = row.get("last5") or []
+                    for ch in (last5 + [""] * (5 - len(last5)))[:5]:
+                        if ch == "W":
+                            color = "#48bb78"  # green
+                        elif ch == "L":
+                            color = "#f56565"  # red
+                        elif ch == "D":
+                            color = "#a0aec0"  # grey
+                        else:
+                            color = "#4a5568"  # empty / unknown
+
+                        tk.Label(
+                            form_cell,
+                            text="●",
+                            fg=color,
+                            bg=bg,
+                            font=("Segoe UI", 20),
+                        ).pack(side="left", padx=2)
+
+                # Page buttons (1, 2, ...)
+                total_rows = len(table)
+                total_pages = max(1, math.ceil(total_rows / page_size))
+                for i in range(total_pages):
+                    is_current = i == page_index
+                    tk.Button(
+                        pages_box,
+                        text=str(i + 1),
+                        font=("Segoe UI", 26, "bold"),
+                        width=3,
+                        height=2,
+                        bg="#3182ce" if is_current else "#4a5568",
+                        fg="white",
+                        bd=0,
+                        activebackground="#2b6cb0",
+                        activeforeground="white",
+                        command=lambda p=i: render_page(p),
+                    ).pack(side="left", padx=10)
+
+            self.root.after(0, lambda: render_page(0))
 
         threading.Thread(target=load_table, daemon=True).start()
 
@@ -377,6 +634,10 @@ class SportsModeApp:
     def confirm_exit(self):
         if messagebox.askyesno("Exit", "Exit Sports Mode?"):
             self.root.destroy()
+
+    def confirm_shutdown(self):
+        if messagebox.askyesno("Turn off", "Turn off this PC now?"):
+            self.shutdown_pc()
 
     def run(self):
         self.root.mainloop()
