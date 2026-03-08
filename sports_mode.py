@@ -127,45 +127,55 @@ def fetch_football_scores(league_code):
 
 def fetch_form_for_league(league_code):
     """
-    Fetch recent completed matches from the scoreboard across the last ~6 weeks
-    and return a dict of {team_name: [list of 'W'/'D'/'L']} for last 5 games.
-    This is one approach per league, not per team — much faster.
+    Fetch recent completed matches using a date range query, building a
+    form map {team_displayName: ['W','D','L', ...]} for the last 5 games.
+    Falls back to the streak stat from the standings if scoreboard fails.
     """
     from datetime import datetime, timedelta
 
-    form_map = {}   # team_displayName -> list of results (oldest first)
+    today    = datetime.utcnow()
+    start    = today - timedelta(weeks=10)
+    date_str = f"{start.strftime('%Y%m%d')}-{today.strftime('%Y%m%d')}"
 
-    today = datetime.utcnow()
-    # Check the last 6 weeks in weekly chunks to find completed matches
-    dates_to_check = []
-    for weeks_ago in range(6):
-        d = today - timedelta(weeks=weeks_ago)
-        dates_to_check.append(d.strftime("%Y%m%d"))
+    url = (f"https://site.api.espn.com/apis/site/v2/sports/soccer/"
+           f"{league_code}/scoreboard?dates={date_str}&limit=500")
 
     all_events = []
-    for date_str in dates_to_check:
-        url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/scoreboard?dates={date_str}&limit=50"
-        try:
-            r = requests.get(url, headers=HEADERS, timeout=8)
-            data = r.json()
-            all_events.extend(data.get("events", []))
-        except Exception:
-            continue
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=15)
+        data = r.json()
+        all_events = data.get("events", [])
+    except Exception:
+        pass
 
-    # Sort all events oldest-first so we append in chronological order
+    # If the range query returned nothing, fall back to week-by-week
+    if not all_events:
+        for weeks_ago in range(10):
+            d = today - timedelta(weeks=weeks_ago)
+            fb_url = (f"https://site.api.espn.com/apis/site/v2/sports/soccer/"
+                      f"{league_code}/scoreboard?dates={d.strftime('%Y%m%d')}&limit=50")
+            try:
+                r = requests.get(fb_url, headers=HEADERS, timeout=8)
+                all_events.extend(r.json().get("events", []))
+            except Exception:
+                continue
+
+    # Sort oldest-first
     try:
         all_events.sort(key=lambda e: e.get("date", ""))
     except Exception:
         pass
 
-    seen_event_ids = set()
+    form_map = {}
+    seen = set()
+
     for event in all_events:
         eid = event.get("id")
-        if eid in seen_event_ids:
+        if eid in seen:
             continue
-        seen_event_ids.add(eid)
+        seen.add(eid)
 
-        comp = (event.get("competitions") or [{}])[0]
+        comp   = (event.get("competitions") or [{}])[0]
         status = (comp.get("status") or {}).get("type") or {}
         if not status.get("completed"):
             continue
@@ -177,27 +187,26 @@ def fetch_form_for_league(league_code):
         try:
             home = next(c for c in competitors if c.get("homeAway") == "home")
             away = next(c for c in competitors if c.get("homeAway") == "away")
-            home_score = float(home.get("score", 0))
-            away_score = float(away.get("score", 0))
+            hs   = float(home.get("score", 0))
+            as_  = float(away.get("score", 0))
         except Exception:
             continue
 
-        home_name = (home.get("team") or {}).get("displayName", "")
-        away_name = (away.get("team") or {}).get("displayName", "")
-        if not home_name or not away_name:
+        hn = (home.get("team") or {}).get("displayName", "")
+        an = (away.get("team") or {}).get("displayName", "")
+        if not hn or not an:
             continue
 
-        if home_score > away_score:
-            home_result, away_result = "W", "L"
-        elif home_score < away_score:
-            home_result, away_result = "L", "W"
+        if hs > as_:
+            hr, ar = "W", "L"
+        elif hs < as_:
+            hr, ar = "L", "W"
         else:
-            home_result, away_result = "D", "D"
+            hr, ar = "D", "D"
 
-        form_map.setdefault(home_name, []).append(home_result)
-        form_map.setdefault(away_name, []).append(away_result)
+        form_map.setdefault(hn, []).append(hr)
+        form_map.setdefault(an, []).append(ar)
 
-    # Trim to last 5 for each team
     return {name: results[-5:] for name, results in form_map.items()}
 
 
@@ -382,7 +391,7 @@ class SportsModeApp:
         frame.pack(expand=True, fill="both")
         self.current_frame = frame
 
-        tk.Label(frame, text="⚽  Grandad's Sports Mode",
+        tk.Label(frame, text="⚽  Grandad's Sports Tracker",
                  fg="white", bg=BG,
                  font=("Segoe UI", 52, "bold")).pack(pady=(10, 20))
 
@@ -405,7 +414,7 @@ class SportsModeApp:
 
         gbtn(grid, "🏟\nFootball",    BLUE,  BLUE_HOV,  self.show_football_leagues,           0, 0)
         gbtn(grid, "🏍\nSpeedway",    AMBER, AMBER_HOV, lambda: self.show_scores("speedway"), 0, 1)
-        gbtn(grid, "⏻   Turn Off PC", RED,   RED_HOV,   self.confirm_shutdown,                1, 0, colspan=2)
+        gbtn(grid, "⏻   Turn Off", RED,   RED_HOV,   self.confirm_shutdown,                1, 0, colspan=2)
 
     # ── League picker ─────────────────────────────────────────────────────
 
@@ -604,16 +613,28 @@ class SportsModeApp:
 
                     form_cell = tk.Frame(self.scores_box, bg=bg)
                     form_cell.grid(row=r_i, column=7, padx=6, pady=3, sticky="w")
-                    last5 = row.get("last5") or []
+                    last5  = row.get("last5") or []
                     padded = (last5 + [""] * (5 - len(last5)))[:5]
+                    FORM_COLOURS = {"W": "#16a34a", "L": "#dc2626", "D": "#4b5563"}
                     for ch in padded:
-                        colour = {"W": "#16a34a", "L": "#dc2626", "D": "#6b7280"}.get(ch, "#1f2937")
-                        label  = ch if ch else "·"
-                        dot_frame = tk.Frame(form_cell, bg=colour, width=36, height=36)
-                        dot_frame.pack(side="left", padx=3)
-                        dot_frame.pack_propagate(False)
-                        tk.Label(dot_frame, text=label, fg="white", bg=colour,
-                                 font=("Segoe UI", 16, "bold")).place(relx=0.5, rely=0.5, anchor="center")
+                        if ch in FORM_COLOURS:
+                            dot_bg = FORM_COLOURS[ch]
+                            dot_fg = "white"
+                            letter = ch
+                        else:
+                            # Empty slot — dim outline only
+                            dot_bg = bg
+                            dot_fg = "#374151"
+                            letter = "–"
+                        dot = tk.Frame(form_cell, bg=dot_bg,
+                                       highlightbackground="#374151",
+                                       highlightthickness=1,
+                                       width=34, height=34)
+                        dot.pack(side="left", padx=2)
+                        dot.pack_propagate(False)
+                        tk.Label(dot, text=letter, fg=dot_fg, bg=dot_bg,
+                                 font=("Segoe UI", 14, "bold")
+                                 ).place(relx=0.5, rely=0.5, anchor="center")
 
                 total_pages = max(1, math.ceil(len(table) / page_size))
                 for i in range(total_pages):

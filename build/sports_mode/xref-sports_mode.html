@@ -194,11 +194,11 @@ imports:
  &#8226;   <a href="#_collections_abc">_collections_abc</a>
  &#8226;   <a href="#_weakrefset">_weakrefset</a>
  &#8226;   <a href="#abc">abc</a>
- &#8226;   <a href="#bs4">bs4</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#collections">collections</a>
  &#8226;   <a href="#collections.abc">collections.abc</a>
  &#8226;   <a href="#copyreg">copyreg</a>
+ &#8226;   <a href="#datetime">datetime</a>
  &#8226;   <a href="#encodings">encodings</a>
  &#8226;   <a href="#encodings.aliases">encodings.aliases</a>
  &#8226;   <a href="#encodings.ascii">encodings.ascii</a>
@@ -331,6 +331,7 @@ imports:
  &#8226;   <a href="#keyword">keyword</a>
  &#8226;   <a href="#linecache">linecache</a>
  &#8226;   <a href="#locale">locale</a>
+ &#8226;   <a href="#math">math</a>
  &#8226;   <a href="#ntpath">ntpath</a>
  &#8226;   <a href="#operator">operator</a>
  &#8226;   <a href="#os">os</a>
@@ -438,28 +439,6 @@ imported by:
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
     <a href="#setuptools._distutils.command.check">setuptools._distutils.command.check</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="'html5lib.constants'"></a>
-  <a target="code" href="" type="text/plain"><tt>'html5lib.constants'</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="'html5lib.treebuilders'"></a>
-  <a target="code" href="" type="text/plain"><tt>'html5lib.treebuilders'</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
 
   </div>
 
@@ -2635,13 +2614,6 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imported by:
     <a href="#PIL._deprecate">PIL._deprecate</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
  &#8226;   <a href="#codeop">codeop</a>
  &#8226;   <a href="#defusedxml">defusedxml</a>
  &#8226;   <a href="#defusedxml.ElementTree">defusedxml.ElementTree</a>
@@ -2690,13 +2662,6 @@ imported by:
  &#8226;   <a href="#pydoc">pydoc</a>
  &#8226;   <a href="#setuptools._vendor.tomli._parser">setuptools._vendor.tomli._parser</a>
  &#8226;   <a href="#setuptools._vendor.tomli._re">setuptools._vendor.tomli._re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.__meta__">soupsieve.__meta__</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.pretty">soupsieve.pretty</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
  &#8226;   <a href="#urllib3">urllib3</a>
  &#8226;   <a href="#urllib3._base_connection">urllib3._base_connection</a>
  &#8226;   <a href="#urllib3._collections">urllib3._collections</a>
@@ -3263,22 +3228,6 @@ imported by:
     <a href="#packaging._manylinux">packaging._manylinux</a>
  &#8226;   <a href="#pkg_resources._vendor.packaging._manylinux">pkg_resources._vendor.packaging._manylinux</a>
  &#8226;   <a href="#setuptools._vendor.packaging._manylinux">setuptools._vendor.packaging._manylinux</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="_markupbase"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/_markupbase.py" type="text/plain"><tt>_markupbase</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#re">re</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#html.parser">html.parser</a>
 
   </div>
 
@@ -5126,391 +5075,6 @@ imported by:
 </div>
 
 <div class="node">
-  <a name="bs4"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/__init__.py" type="text/plain"><tt>bs4</tt></a>
-<span class="moduletype">Package</span>  <div class="import">
-imports:
-    <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4._warnings">bs4._warnings</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
- &#8226;   <a href="#collections">collections</a>
- &#8226;   <a href="#io">io</a>
- &#8226;   <a href="#sys">sys</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4._warnings">bs4._warnings</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4._deprecation"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/_deprecation.py" type="text/plain"><tt>bs4._deprecation</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#functools">functools</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4._typing"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/_typing.py" type="text/plain"><tt>bs4._typing</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4._warnings"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/_warnings.py" type="text/plain"><tt>bs4._warnings</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#bs4">bs4</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.builder"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/builder/__init__.py" type="text/plain"><tt>bs4.builder</tt></a>
-<span class="moduletype">Package</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4._warnings">bs4._warnings</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#collections">collections</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#sys">sys</a>
- &#8226;   <a href="#types">types</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.builder._html5lib"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/builder/_html5lib.py" type="text/plain"><tt>bs4.builder._html5lib</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#'html5lib.constants'">'html5lib.constants'</a>
- &#8226;   <a href="#'html5lib.treebuilders'">'html5lib.treebuilders'</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#html5lib">html5lib</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4.builder">bs4.builder</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.builder._htmlparser"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/builder/_htmlparser.py" type="text/plain"><tt>bs4.builder._htmlparser</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#html.parser">html.parser</a>
- &#8226;   <a href="#typing">typing</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.builder._lxml"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/builder/_lxml.py" type="text/plain"><tt>bs4.builder._lxml</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#io">io</a>
- &#8226;   <a href="#lxml">lxml</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4.builder">bs4.builder</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.css"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/css.py" type="text/plain"><tt>bs4.css</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#types">types</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.dammit"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/dammit.py" type="text/plain"><tt>bs4.dammit</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#cchardet">cchardet</a>
- &#8226;   <a href="#chardet">chardet</a>
- &#8226;   <a href="#charset_normalizer">charset_normalizer</a>
- &#8226;   <a href="#codecs">codecs</a>
- &#8226;   <a href="#collections">collections</a>
- &#8226;   <a href="#html.entities">html.entities</a>
- &#8226;   <a href="#logging">logging</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#types">types</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.element"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/element.py" type="text/plain"><tt>bs4.element</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4._warnings">bs4._warnings</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.exceptions"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/exceptions.py" type="text/plain"><tt>bs4.exceptions</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#typing">typing</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.filter"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/filter.py" type="text/plain"><tt>bs4.filter</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#collections">collections</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="bs4.formatter"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/bs4/formatter.py" type="text/plain"><tt>bs4.formatter</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#typing_extensions">typing_extensions</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
-
-  </div>
-
-</div>
-
-<div class="node">
   <a name="builtins"></a>
   <tt>builtins</tt> <span class="moduletype"><i>(builtin module)</i></span>  <div class="import">
 imported by:
@@ -5624,17 +5188,6 @@ imported by:
  &#8226;   <a href="#http.cookiejar">http.cookiejar</a>
  &#8226;   <a href="#requests.cookies">requests.cookies</a>
  &#8226;   <a href="#ssl">ssl</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="cchardet"></a>
-  <a target="code" href="" type="text/plain"><tt>cchardet</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#bs4.dammit">bs4.dammit</a>
 
   </div>
 
@@ -6089,8 +5642,7 @@ imported by:
   <a target="code" href="" type="text/plain"><tt>chardet</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
-    <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#requests">requests</a>
+    <a href="#requests">requests</a>
  &#8226;   <a href="#requests.compat">requests.compat</a>
  &#8226;   <a href="#requests.packages">requests.packages</a>
 
@@ -6114,8 +5666,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#charset_normalizer.api">charset_normalizer.api</a>
+    <a href="#charset_normalizer.api">charset_normalizer.api</a>
  &#8226;   <a href="#charset_normalizer.assets">charset_normalizer.assets</a>
  &#8226;   <a href="#charset_normalizer.cd">charset_normalizer.cd</a>
  &#8226;   <a href="#charset_normalizer.constant">charset_normalizer.constant</a>
@@ -6402,7 +5953,6 @@ imports:
 imported by:
     <a href="#PIL.PdfParser">PIL.PdfParser</a>
  &#8226;   <a href="#_pickle">_pickle</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
  &#8226;   <a href="#charset_normalizer.cd">charset_normalizer.cd</a>
  &#8226;   <a href="#charset_normalizer.constant">charset_normalizer.constant</a>
  &#8226;   <a href="#charset_normalizer.utils">charset_normalizer.utils</a>
@@ -6593,10 +6143,6 @@ imported by:
  &#8226;   <a href="#asyncio.selector_events">asyncio.selector_events</a>
  &#8226;   <a href="#asyncio.sslproto">asyncio.sslproto</a>
  &#8226;   <a href="#asyncio.streams">asyncio.streams</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
  &#8226;   <a href="#cffi.api">cffi.api</a>
  &#8226;   <a href="#charset_normalizer.cd">charset_normalizer.cd</a>
  &#8226;   <a href="#collections.abc">collections.abc</a>
@@ -6669,7 +6215,6 @@ imported by:
  &#8226;   <a href="#setuptools.dist">setuptools.dist</a>
  &#8226;   <a href="#shlex">shlex</a>
  &#8226;   <a href="#shutil">shutil</a>
- &#8226;   <a href="#soupsieve.__meta__">soupsieve.__meta__</a>
  &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#statistics">statistics</a>
@@ -7147,7 +6692,6 @@ imported by:
  &#8226;   <a href="#numpy.core">numpy.core</a>
  &#8226;   <a href="#pickle">pickle</a>
  &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
  &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
 
   </div>
@@ -7435,7 +6979,7 @@ imported by:
  &#8226;   <a href="#requests.sessions">requests.sessions</a>
  &#8226;   <a href="#setuptools._vendor.pyparsing.common">setuptools._vendor.pyparsing.common</a>
  &#8226;   <a href="#setuptools._vendor.tomli._re">setuptools._vendor.tomli._re</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
+ &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#urllib3.connection">urllib3.connection</a>
  &#8226;   <a href="#win32com.client.build">win32com.client.build</a>
  &#8226;   <a href="#xmlrpc.client">xmlrpc.client</a>
@@ -12096,7 +11640,6 @@ imported by:
  &#8226;   <a href="#asyncio.selector_events">asyncio.selector_events</a>
  &#8226;   <a href="#asyncio.tasks">asyncio.tasks</a>
  &#8226;   <a href="#asyncio.threads">asyncio.threads</a>
- &#8226;   <a href="#bs4._deprecation">bs4._deprecation</a>
  &#8226;   <a href="#charset_normalizer.cd">charset_normalizer.cd</a>
  &#8226;   <a href="#charset_normalizer.utils">charset_normalizer.utils</a>
  &#8226;   <a href="#concurrent.futures.process">concurrent.futures.process</a>
@@ -12207,8 +11750,6 @@ imported by:
  &#8226;   <a href="#setuptools.config.setupcfg">setuptools.config.setupcfg</a>
  &#8226;   <a href="#setuptools.extension">setuptools.extension</a>
  &#8226;   <a href="#setuptools.monkey">setuptools.monkey</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
  &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#statistics">statistics</a>
  &#8226;   <a href="#tempfile">tempfile</a>
@@ -12513,7 +12054,6 @@ imports:
 imported by:
     <a href="#cgi">cgi</a>
  &#8226;   <a href="#html.entities">html.entities</a>
- &#8226;   <a href="#html.parser">html.parser</a>
  &#8226;   <a href="#http.server">http.server</a>
  &#8226;   <a href="#markupsafe">markupsafe</a>
  &#8226;   <a href="#xmlrpc.server">xmlrpc.server</a>
@@ -12532,40 +12072,10 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#html">html</a>
+    <a href="#html">html</a>
  &#8226;   <a href="#pkg_resources._vendor.pyparsing.helpers">pkg_resources._vendor.pyparsing.helpers</a>
  &#8226;   <a href="#pyparsing.helpers">pyparsing.helpers</a>
  &#8226;   <a href="#setuptools._vendor.pyparsing.helpers">setuptools._vendor.pyparsing.helpers</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="html.parser"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/html/parser.py" type="text/plain"><tt>html.parser</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#_markupbase">_markupbase</a>
- &#8226;   <a href="#html">html</a>
- &#8226;   <a href="#re">re</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="html5lib"></a>
-  <a target="code" href="" type="text/plain"><tt>html5lib</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
 
   </div>
 
@@ -13552,8 +13062,6 @@ imported by:
  &#8226;   <a href="#_compression">_compression</a>
  &#8226;   <a href="#asyncio.proactor_events">asyncio.proactor_events</a>
  &#8226;   <a href="#asyncio.unix_events">asyncio.unix_events</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
  &#8226;   <a href="#bz2">bz2</a>
  &#8226;   <a href="#cffi.ffiplatform">cffi.ffiplatform</a>
  &#8226;   <a href="#cffi.recompiler">cffi.recompiler</a>
@@ -14650,7 +14158,6 @@ imported by:
  &#8226;   <a href="#PIL.TiffImagePlugin">PIL.TiffImagePlugin</a>
  &#8226;   <a href="#asyncio.futures">asyncio.futures</a>
  &#8226;   <a href="#asyncio.log">asyncio.log</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
  &#8226;   <a href="#charset_normalizer">charset_normalizer</a>
  &#8226;   <a href="#charset_normalizer.api">charset_normalizer.api</a>
  &#8226;   <a href="#charset_normalizer.utils">charset_normalizer.utils</a>
@@ -14677,17 +14184,6 @@ imported by:
  &#8226;   <a href="#urllib3.poolmanager">urllib3.poolmanager</a>
  &#8226;   <a href="#urllib3.response">urllib3.response</a>
  &#8226;   <a href="#urllib3.util.retry">urllib3.util.retry</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="lxml"></a>
-  <a target="code" href="" type="text/plain"><tt>lxml</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
 
   </div>
 
@@ -14821,6 +14317,7 @@ imported by:
  &#8226;   <a href="#random">random</a>
  &#8226;   <a href="#selectors">selectors</a>
  &#8226;   <a href="#setuptools._vendor.more_itertools.more">setuptools._vendor.more_itertools.more</a>
+ &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#statistics">statistics</a>
 
   </div>
@@ -24286,17 +23783,12 @@ imported by:
  &#8226;   <a href="#PIL.PngImagePlugin">PIL.PngImagePlugin</a>
  &#8226;   <a href="#PIL.XbmImagePlugin">PIL.XbmImagePlugin</a>
  &#8226;   <a href="#PIL.XpmImagePlugin">PIL.XpmImagePlugin</a>
- &#8226;   <a href="#_markupbase">_markupbase</a>
  &#8226;   <a href="#_osx_support">_osx_support</a>
  &#8226;   <a href="#_pydecimal">_pydecimal</a>
  &#8226;   <a href="#_sre">_sre</a>
  &#8226;   <a href="#_strptime">_strptime</a>
  &#8226;   <a href="#argparse">argparse</a>
  &#8226;   <a href="#base64">base64</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
  &#8226;   <a href="#cffi.api">cffi.api</a>
  &#8226;   <a href="#cffi.cparser">cffi.cparser</a>
  &#8226;   <a href="#cgi">cgi</a>
@@ -24340,7 +23832,6 @@ imported by:
  &#8226;   <a href="#gettext">gettext</a>
  &#8226;   <a href="#glob">glob</a>
  &#8226;   <a href="#html">html</a>
- &#8226;   <a href="#html.parser">html.parser</a>
  &#8226;   <a href="#http.client">http.client</a>
  &#8226;   <a href="#http.cookiejar">http.cookiejar</a>
  &#8226;   <a href="#http.cookies">http.cookies</a>
@@ -24454,11 +23945,6 @@ imported by:
  &#8226;   <a href="#setuptools.glob">setuptools.glob</a>
  &#8226;   <a href="#setuptools.wheel">setuptools.wheel</a>
  &#8226;   <a href="#shlex">shlex</a>
- &#8226;   <a href="#soupsieve.__meta__">soupsieve.__meta__</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.pretty">soupsieve.pretty</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
  &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
@@ -29465,169 +28951,6 @@ imported by:
 </div>
 
 <div class="node">
-  <a name="soupsieve"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/__init__.py" type="text/plain"><tt>soupsieve</tt></a>
-<span class="moduletype">Package</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.__meta__">soupsieve.__meta__</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
- &#8226;   <a href="#typing">typing</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.__meta__">soupsieve.__meta__</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.pretty">soupsieve.pretty</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.__meta__"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/__meta__.py" type="text/plain"><tt>soupsieve.__meta__</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#collections">collections</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve">soupsieve</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.css_match"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/css_match.py" type="text/plain"><tt>soupsieve.css_match</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#datetime">datetime</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#unicodedata">unicodedata</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.css_parser"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/css_parser.py" type="text/plain"><tt>soupsieve.css_parser</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#functools">functools</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve">soupsieve</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.css_types"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/css_types.py" type="text/plain"><tt>soupsieve.css_types</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#copyreg">copyreg</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.pretty">soupsieve.pretty</a>
- &#8226;   <a href="#typing">typing</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.pretty"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/pretty.py" type="text/plain"><tt>soupsieve.pretty</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#typing">typing</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve.css_types">soupsieve.css_types</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="soupsieve.util"></a>
-  <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/site-packages/soupsieve/util.py" type="text/plain"><tt>soupsieve.util</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#__future__">__future__</a>
- &#8226;   <a href="#functools">functools</a>
- &#8226;   <a href="#re">re</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#typing">typing</a>
- &#8226;   <a href="#warnings">warnings</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
-
-  </div>
-
-</div>
-
-<div class="node">
   <a name="sre_compile"></a>
   <a target="code" href="///C:/Users/alist/AppData/Local/Programs/Python/Python311/Lib/sre_compile.py" type="text/plain"><tt>sre_compile</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -30016,8 +29339,6 @@ imported by:
  &#8226;   <a href="#asyncio.windows_utils">asyncio.windows_utils</a>
  &#8226;   <a href="#base64">base64</a>
  &#8226;   <a href="#bdb">bdb</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
  &#8226;   <a href="#calendar">calendar</a>
  &#8226;   <a href="#certifi.core">certifi.core</a>
  &#8226;   <a href="#cffi.api">cffi.api</a>
@@ -30919,9 +30240,6 @@ imported by:
  &#8226;   <a href="#asyncio.queues">asyncio.queues</a>
  &#8226;   <a href="#asyncio.tasks">asyncio.tasks</a>
  &#8226;   <a href="#asyncio.timeouts">asyncio.timeouts</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
  &#8226;   <a href="#certifi.core">certifi.core</a>
  &#8226;   <a href="#cffi.api">cffi.api</a>
  &#8226;   <a href="#cffi.model">cffi.model</a>
@@ -31033,19 +30351,6 @@ imports:
 imported by:
     <a href="#asyncio.staggered">asyncio.staggered</a>
  &#8226;   <a href="#asyncio.timeouts">asyncio.timeouts</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._htmlparser">bs4.builder._htmlparser</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.exceptions">bs4.exceptions</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
  &#8226;   <a href="#certifi.core">certifi.core</a>
  &#8226;   <a href="#charset_normalizer.api">charset_normalizer.api</a>
  &#8226;   <a href="#charset_normalizer.assets">charset_normalizer.assets</a>
@@ -31198,12 +30503,6 @@ imported by:
  &#8226;   <a href="#setuptools.config.setupcfg">setuptools.config.setupcfg</a>
  &#8226;   <a href="#setuptools.discovery">setuptools.discovery</a>
  &#8226;   <a href="#setuptools.dist">setuptools.dist</a>
- &#8226;   <a href="#soupsieve">soupsieve</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.css_types">soupsieve.css_types</a>
- &#8226;   <a href="#soupsieve.pretty">soupsieve.pretty</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
  &#8226;   <a href="#threadpoolctl">threadpoolctl</a>
  &#8226;   <a href="#typing_extensions">typing_extensions</a>
  &#8226;   <a href="#urllib3">urllib3</a>
@@ -31256,13 +30555,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#bs4._typing">bs4._typing</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.builder._lxml">bs4.builder._lxml</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.formatter">bs4.formatter</a>
- &#8226;   <a href="#jinja2.bccache">jinja2.bccache</a>
+    <a href="#jinja2.bccache">jinja2.bccache</a>
  &#8226;   <a href="#jinja2.compiler">jinja2.compiler</a>
  &#8226;   <a href="#jinja2.defaults">jinja2.defaults</a>
  &#8226;   <a href="#jinja2.environment">jinja2.environment</a>
@@ -31302,7 +30595,6 @@ imported by:
  &#8226;   <a href="#idna.core">idna.core</a>
  &#8226;   <a href="#re._parser">re._parser</a>
  &#8226;   <a href="#setuptools.unicode_utils">setuptools.unicode_utils</a>
- &#8226;   <a href="#soupsieve.css_match">soupsieve.css_match</a>
  &#8226;   <a href="#stringprep">stringprep</a>
  &#8226;   <a href="#urllib.parse">urllib.parse</a>
 
@@ -32716,14 +32008,6 @@ imported by:
  &#8226;   <a href="#asyncio.tasks">asyncio.tasks</a>
  &#8226;   <a href="#asyncio.unix_events">asyncio.unix_events</a>
  &#8226;   <a href="#asyncio.windows_utils">asyncio.windows_utils</a>
- &#8226;   <a href="#bs4">bs4</a>
- &#8226;   <a href="#bs4._deprecation">bs4._deprecation</a>
- &#8226;   <a href="#bs4.builder">bs4.builder</a>
- &#8226;   <a href="#bs4.builder._html5lib">bs4.builder._html5lib</a>
- &#8226;   <a href="#bs4.css">bs4.css</a>
- &#8226;   <a href="#bs4.dammit">bs4.dammit</a>
- &#8226;   <a href="#bs4.element">bs4.element</a>
- &#8226;   <a href="#bs4.filter">bs4.filter</a>
  &#8226;   <a href="#cffi.cparser">cffi.cparser</a>
  &#8226;   <a href="#cffi.model">cffi.model</a>
  &#8226;   <a href="#cffi.vengine_cpy">cffi.vengine_cpy</a>
@@ -32860,8 +32144,6 @@ imported by:
  &#8226;   <a href="#setuptools.dist">setuptools.dist</a>
  &#8226;   <a href="#setuptools.installer">setuptools.installer</a>
  &#8226;   <a href="#shlex">shlex</a>
- &#8226;   <a href="#soupsieve.css_parser">soupsieve.css_parser</a>
- &#8226;   <a href="#soupsieve.util">soupsieve.util</a>
  &#8226;   <a href="#sports_mode.py">sports_mode.py</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
