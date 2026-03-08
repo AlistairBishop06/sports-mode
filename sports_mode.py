@@ -90,60 +90,115 @@ def fetch_football_scores(league_code):
             away = next(t for t in teams if t.get("homeAway") == "away")
         except StopIteration:
             continue
+
+        # ── Status ────────────────────────────────────────────────
+        status_obj  = comp.get("status", {})
+        status_type = status_obj.get("type", {})
+        state       = status_type.get("state", "pre")      # "pre" | "in" | "post"
+        completed   = status_type.get("completed", False)
+        detail      = status_type.get("shortDetail", "")   # e.g. "45'" or "HT" or "FT"
+
+        # Kickoff time for upcoming games
+        kickoff_raw = event.get("date", "")
+        kickoff_str = ""
+        if state == "pre" and kickoff_raw:
+            try:
+                from datetime import datetime, timezone, timedelta
+                dt_utc = datetime.strptime(kickoff_raw, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
+                dt_local = dt_utc + timedelta(hours=1)   # BST offset — adjust if needed
+                kickoff_str = dt_local.strftime("%H:%M")
+            except Exception:
+                kickoff_str = ""
+
         matches.append({
-            "home_name":  home.get("team", {}).get("displayName", "Home"),
-            "away_name":  away.get("team", {}).get("displayName", "Away"),
-            "home_score": home.get("score", "-"),
-            "away_score": away.get("score", "-"),
-            "home_logo":  (home.get("team") or {}).get("logo"),
-            "away_logo":  (away.get("team") or {}).get("logo"),
+            "home_name":   home.get("team", {}).get("displayName", "Home"),
+            "away_name":   away.get("team", {}).get("displayName", "Away"),
+            "home_score":  home.get("score", "-"),
+            "away_score":  away.get("score", "-"),
+            "home_logo":   (home.get("team") or {}).get("logo"),
+            "away_logo":   (away.get("team") or {}).get("logo"),
+            "state":       state,        # "pre" | "in" | "post"
+            "completed":   completed,
+            "detail":      detail,       # "45'" / "HT" / "FT" / ""
+            "kickoff":     kickoff_str,  # "15:00" for upcoming
         })
     return matches
 
 
-def fetch_last5_for_team(league_code, team_id):
-    if not team_id:
-        return []
-    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/teams/{team_id}/schedule"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        data = r.json()
-    except Exception:
-        return []
+def fetch_form_for_league(league_code):
+    """
+    Fetch recent completed matches from the scoreboard across the last ~6 weeks
+    and return a dict of {team_name: [list of 'W'/'D'/'L']} for last 5 games.
+    This is one approach per league, not per team — much faster.
+    """
+    from datetime import datetime, timedelta
 
-    events = data.get("events", [])
+    form_map = {}   # team_displayName -> list of results (oldest first)
+
+    today = datetime.utcnow()
+    # Check the last 6 weeks in weekly chunks to find completed matches
+    dates_to_check = []
+    for weeks_ago in range(6):
+        d = today - timedelta(weeks=weeks_ago)
+        dates_to_check.append(d.strftime("%Y%m%d"))
+
+    all_events = []
+    for date_str in dates_to_check:
+        url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/scoreboard?dates={date_str}&limit=50"
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=8)
+            data = r.json()
+            all_events.extend(data.get("events", []))
+        except Exception:
+            continue
+
+    # Sort all events oldest-first so we append in chronological order
     try:
-        events = sorted(events, key=lambda e: e.get("date", ""))
+        all_events.sort(key=lambda e: e.get("date", ""))
     except Exception:
         pass
 
-    results = []
-    str_team_id = str(team_id)
-    for event in events:
-        competitions = event.get("competitions") or []
-        if not competitions:
+    seen_event_ids = set()
+    for event in all_events:
+        eid = event.get("id")
+        if eid in seen_event_ids:
             continue
-        comp = competitions[0]
+        seen_event_ids.add(eid)
+
+        comp = (event.get("competitions") or [{}])[0]
         status = (comp.get("status") or {}).get("type") or {}
         if not status.get("completed"):
             continue
+
         competitors = comp.get("competitors") or []
-        me = opp = None
-        for c in competitors:
-            tid = str((c.get("team") or {}).get("id"))
-            if tid == str_team_id:
-                me = c
-            elif opp is None:
-                opp = c
-        if not me or not opp:
+        if len(competitors) < 2:
             continue
+
         try:
-            my_score  = float(me.get("score", 0))
-            opp_score = float(opp.get("score", 0))
+            home = next(c for c in competitors if c.get("homeAway") == "home")
+            away = next(c for c in competitors if c.get("homeAway") == "away")
+            home_score = float(home.get("score", 0))
+            away_score = float(away.get("score", 0))
         except Exception:
             continue
-        results.append("W" if my_score > opp_score else "L" if my_score < opp_score else "D")
-    return results[-5:]
+
+        home_name = (home.get("team") or {}).get("displayName", "")
+        away_name = (away.get("team") or {}).get("displayName", "")
+        if not home_name or not away_name:
+            continue
+
+        if home_score > away_score:
+            home_result, away_result = "W", "L"
+        elif home_score < away_score:
+            home_result, away_result = "L", "W"
+        else:
+            home_result, away_result = "D", "D"
+
+        form_map.setdefault(home_name, []).append(home_result)
+        form_map.setdefault(away_name, []).append(away_result)
+
+    # Trim to last 5 for each team
+    return {name: results[-5:] for name, results in form_map.items()}
 
 
 def fetch_table(league_code):
@@ -153,6 +208,9 @@ def fetch_table(league_code):
         data = r.json()
     except Exception:
         return []
+
+    # Fetch form data for all teams in one batch of calls
+    form_map = fetch_form_for_league(league_code)
 
     table = []
     try:
@@ -170,7 +228,6 @@ def fetch_table(league_code):
         for idx, entry in enumerate(entries, start=1):
             team_info = entry.get("team", {}) or {}
             team_name = team_info.get("displayName", "Unknown")
-            team_id   = team_info.get("id")
 
             logo_url = None
             logos = team_info.get("logos") or []
@@ -206,7 +263,8 @@ def fetch_table(league_code):
             except Exception:
                 position = idx
 
-            last5 = fetch_last5_for_team(league_code, team_id)
+            last5 = form_map.get(team_name, [])
+
             table.append({
                 "position": position, "team": team_name,
                 "points": points, "wins": wins, "losses": losses,
@@ -438,13 +496,17 @@ class SportsModeApp:
 
         title = "Speedway Results" if mode == "speedway" else "Fixtures & Scores"
         tk.Label(frame, text=title, fg="white", bg=BG,
-                 font=("Segoe UI", 44, "bold")).pack(pady=(0, 20))
+                 font=("Segoe UI", 44, "bold")).pack(pady=(0, 10))
 
+        # Back button anchored to bottom FIRST so it's never pushed off screen
+        back_bar = tk.Frame(frame, bg=BG)
+        back_bar.pack(side="bottom", fill="x", pady=14)
+        styled_btn(back_bar, "← Back", GREY, GREY_HOV,
+                   self.show_main_menu, **BTN_SMALL).pack()
+
+        # scores_box fills whatever space remains between title and back button
         self.scores_box = tk.Frame(frame, bg=BG)
-        self.scores_box.pack(expand=True, fill="both", padx=20)
-
-        styled_btn(frame, "← Back", GREY, GREY_HOV,
-                   self.show_main_menu, **BTN_SMALL).pack(pady=28)
+        self.scores_box.pack(expand=True, fill="both", padx=10)
 
         self.start_loading(self.scores_box)
         self.update_scores()
@@ -543,10 +605,15 @@ class SportsModeApp:
                     form_cell = tk.Frame(self.scores_box, bg=bg)
                     form_cell.grid(row=r_i, column=7, padx=6, pady=3, sticky="w")
                     last5 = row.get("last5") or []
-                    for ch in (last5 + [""] * (5 - len(last5)))[:5]:
-                        colour = {"W": "#22c55e", "L": "#ef4444", "D": "#9ca3af"}.get(ch, "#374151")
-                        tk.Label(form_cell, text="●", fg=colour, bg=bg,
-                                 font=("Segoe UI", 22)).pack(side="left", padx=2)
+                    padded = (last5 + [""] * (5 - len(last5)))[:5]
+                    for ch in padded:
+                        colour = {"W": "#16a34a", "L": "#dc2626", "D": "#6b7280"}.get(ch, "#1f2937")
+                        label  = ch if ch else "·"
+                        dot_frame = tk.Frame(form_cell, bg=colour, width=36, height=36)
+                        dot_frame.pack(side="left", padx=3)
+                        dot_frame.pack_propagate(False)
+                        tk.Label(dot_frame, text=label, fg="white", bg=colour,
+                                 font=("Segoe UI", 16, "bold")).place(relx=0.5, rely=0.5, anchor="center")
 
                 total_pages = max(1, math.ceil(len(table) / page_size))
                 for i in range(total_pages):
@@ -589,36 +656,77 @@ class SportsModeApp:
 
         if not matches:
             tk.Label(self.scores_box, text="No fixtures available right now",
-                     fg="#9ca3af", bg=BG, font=("Segoe UI", 30)).pack(pady=60)
+                     fg="#9ca3af", bg=BG, font=("Segoe UI", 30)).pack(expand=True)
         else:
-            for m in matches:
-                card = tk.Frame(self.scores_box, bg="#111827",
-                                highlightbackground="#1f2937", highlightthickness=1)
-                card.pack(fill="x", pady=8, padx=10)
+            self.scores_box.columnconfigure(0, weight=1)
+            self.scores_box.columnconfigure(1, weight=1)
+
+            for idx, m in enumerate(matches):
+                grid_row, grid_col = divmod(idx, 2)
+                self.scores_box.rowconfigure(grid_row, weight=1)
+
+                state = m.get("state", "post")
+
+                # Card background — subtle tint for live games
+                if state == "in":
+                    card_bg  = "#1a1f2e"
+                    border   = "#3b82f6"   # blue glow for live
+                else:
+                    card_bg  = "#111827"
+                    border   = "#2d3748"
+
+                card = tk.Frame(self.scores_box, bg=card_bg,
+                                highlightbackground=border, highlightthickness=2)
+                card.grid(row=grid_row, column=grid_col, sticky="nsew", padx=8, pady=8)
+                card.columnconfigure(0, weight=1)  # home
+                card.columnconfigure(1, weight=0)  # score
+                card.columnconfigure(2, weight=1)  # away
 
                 home_logo = self.get_logo(m["home_logo"]) if m.get("home_logo") else None
                 away_logo = self.get_logo(m["away_logo"]) if m.get("away_logo") else None
 
-                home_side = tk.Frame(card, bg="#111827")
-                home_side.pack(side="left", expand=True, fill="x", padx=20, pady=12)
+                # ── Status badge (top of card) ────────────────────
+                if state == "in":
+                    badge_text = f"🔴 LIVE  {m.get('detail', '')}"
+                    badge_fg   = "#f87171"
+                elif state == "pre":
+                    badge_text = f"🕐 {m.get('kickoff', 'Upcoming')}"
+                    badge_fg   = "#94a3b8"
+                else:
+                    badge_text = f"✔  FT  {m.get('detail', '')}"
+                    badge_fg   = "#6b7280"
+
+                tk.Label(card, text=badge_text, fg=badge_fg, bg=card_bg,
+                         font=("Segoe UI", 14, "bold")).grid(
+                             row=0, column=0, columnspan=3, pady=(8, 0), padx=10, sticky="w")
+
+                # ── Home (right-aligned) ──────────────────────────
+                home_inner = tk.Frame(card, bg=card_bg)
+                home_inner.grid(row=1, column=0, sticky="e", padx=(10, 4), pady=(4, 10))
                 if home_logo:
-                    tk.Label(home_side, image=home_logo, bg="#111827").pack(side="left", padx=8)
-                tk.Label(home_side, text=m["home_name"], fg="white", bg="#111827",
-                         font=("Segoe UI", 28, "bold"), anchor="e").pack(side="left")
+                    tk.Label(home_inner, image=home_logo, bg=card_bg).pack(side="right", padx=(6, 0))
+                tk.Label(home_inner, text=m["home_name"], fg="white", bg=card_bg,
+                         font=("Segoe UI", 20, "bold"), anchor="e").pack(side="right")
 
-                score_frame = tk.Frame(card, bg="#1f2937")
-                score_frame.pack(side="left", padx=16, pady=8)
-                tk.Label(score_frame,
-                         text=f"  {m['home_score']}  –  {m['away_score']}  ",
-                         fg="white", bg="#1f2937",
-                         font=("Segoe UI", 32, "bold")).pack()
+                # ── Score / kickoff time ──────────────────────────
+                if state == "pre":
+                    score_text = "vs"
+                    score_fg   = "#94a3b8"
+                else:
+                    score_text = f"{m['home_score']}–{m['away_score']}"
+                    score_fg   = "#facc15" if state == "in" else "white"
 
-                away_side = tk.Frame(card, bg="#111827")
-                away_side.pack(side="left", expand=True, fill="x", padx=20, pady=12)
-                tk.Label(away_side, text=m["away_name"], fg="white", bg="#111827",
-                         font=("Segoe UI", 28, "bold"), anchor="w").pack(side="left")
+                tk.Label(card, text=score_text, fg=score_fg, bg=card_bg,
+                         font=("Segoe UI", 24, "bold"), width=7, anchor="center"
+                         ).grid(row=1, column=1, padx=6, pady=(4, 10))
+
+                # ── Away (left-aligned) ───────────────────────────
+                away_inner = tk.Frame(card, bg=card_bg)
+                away_inner.grid(row=1, column=2, sticky="w", padx=(4, 10), pady=(4, 10))
                 if away_logo:
-                    tk.Label(away_side, image=away_logo, bg="#111827").pack(side="left", padx=8)
+                    tk.Label(away_inner, image=away_logo, bg=card_bg).pack(side="left", padx=(0, 6))
+                tk.Label(away_inner, text=m["away_name"], fg="#cbd5e1", bg=card_bg,
+                         font=("Segoe UI", 20, "bold"), anchor="w").pack(side="left")
 
         if self._refresh_job:
             self.root.after_cancel(self._refresh_job)
@@ -631,15 +739,21 @@ class SportsModeApp:
 
         if not lines:
             tk.Label(self.scores_box, text="No speedway results available",
-                     fg="#9ca3af", bg=BG, font=("Segoe UI", 30)).pack(pady=60)
+                     fg="#9ca3af", bg=BG, font=("Segoe UI", 30)).pack(expand=True)
         else:
-            for idx, line in enumerate(lines, start=1):
+            # 2-column grid for speedway results too
+            self.scores_box.columnconfigure(0, weight=1)
+            self.scores_box.columnconfigure(1, weight=1)
+            for idx, line in enumerate(lines):
+                row, col = divmod(idx, 2)
+                self.scores_box.rowconfigure(row, weight=1)
                 card = tk.Frame(self.scores_box, bg="#111827",
-                                highlightbackground="#1f2937", highlightthickness=1)
-                card.pack(fill="x", pady=6, padx=10)
-                tk.Label(card, text=f"  #{idx}  {line}",
+                                highlightbackground="#2d3748", highlightthickness=2)
+                card.grid(row=row, column=col, sticky="nsew", padx=8, pady=8)
+                tk.Label(card, text=f"#{idx + 1}  {line}",
                          fg="white", bg="#111827",
-                         font=("Segoe UI", 26), anchor="w").pack(fill="x", pady=10)
+                         font=("Segoe UI", 22), anchor="w", wraplength=600,
+                         justify="left").pack(fill="both", expand=True, padx=14, pady=12)
 
         if self._refresh_job:
             self.root.after_cancel(self._refresh_job)
