@@ -97,7 +97,7 @@ def fetch_football_scores(league_code):
             try:
                 from datetime import datetime, timezone, timedelta
                 dt_utc = datetime.strptime(kickoff_raw, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
-                dt_local = dt_utc + timedelta(hours=1)   
+                dt_local = dt_utc + timedelta(hours=0)   
 
                 kickoff_str = dt_local.strftime("%H:%M")
             except Exception:
