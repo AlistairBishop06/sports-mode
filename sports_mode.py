@@ -18,9 +18,7 @@ LEAGUES = {
     "Champions League": "uefa.champions"
 }
 
-REFRESH_TIME = 30000  # 30 seconds
-
-# ── Shared button styles ────────────────────────────────────────────────────
+REFRESH_TIME = 30000  
 
 BTN = dict(
     font=("Segoe UI", 34, "bold"),
@@ -30,12 +28,11 @@ BTN = dict(
     activeforeground="white",
 )
 
-BTN_WIDE  = dict(**BTN, width=22, height=3)   # primary action buttons
-BTN_SMALL = dict(**BTN, width=14, height=2)   # secondary / back buttons
+BTN_WIDE  = dict(**BTN, width=22, height=3)   
 
-PAD_Y = 18   # vertical padding between buttons
+BTN_SMALL = dict(**BTN, width=14, height=2)   
 
-# ── Colours ────────────────────────────────────────────────────────────────
+PAD_Y = 18   
 
 BG        = "#0d0d0d"
 BLUE      = "#2563eb"
@@ -49,7 +46,6 @@ RED_HOV   = "#b91c1c"
 GREY      = "#374151"
 GREY_HOV  = "#1f2937"
 
-
 def styled_btn(parent, text, bg, hover_bg, command, **overrides):
     """Create a button with a hover/active highlight effect."""
     kwargs = {**BTN_WIDE, "text": text, "bg": bg, "fg": "white",
@@ -60,8 +56,6 @@ def styled_btn(parent, text, bg, hover_bg, command, **overrides):
     b.bind("<Leave>", lambda e: b.config(bg=bg))
     return b
 
-# ── Data Fetching ──────────────────────────────────────────────────────────
-
 def fetch_logo(url):
     try:
         r = requests.get(url, headers=HEADERS, timeout=10)
@@ -69,7 +63,6 @@ def fetch_logo(url):
         return ImageTk.PhotoImage(img)
     except:
         return None
-
 
 def fetch_football_scores(league_code):
     url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/scoreboard"
@@ -91,21 +84,21 @@ def fetch_football_scores(league_code):
         except StopIteration:
             continue
 
-        # ── Status ────────────────────────────────────────────────
         status_obj  = comp.get("status", {})
         status_type = status_obj.get("type", {})
-        state       = status_type.get("state", "pre")      # "pre" | "in" | "post"
-        completed   = status_type.get("completed", False)
-        detail      = status_type.get("shortDetail", "")   # e.g. "45'" or "HT" or "FT"
+        state       = status_type.get("state", "pre")      
 
-        # Kickoff time for upcoming games
+        completed   = status_type.get("completed", False)
+        detail      = status_type.get("shortDetail", "")   
+
         kickoff_raw = event.get("date", "")
         kickoff_str = ""
         if state == "pre" and kickoff_raw:
             try:
                 from datetime import datetime, timezone, timedelta
                 dt_utc = datetime.strptime(kickoff_raw, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
-                dt_local = dt_utc + timedelta(hours=1)   # BST offset — adjust if needed
+                dt_local = dt_utc + timedelta(hours=1)   
+
                 kickoff_str = dt_local.strftime("%H:%M")
             except Exception:
                 kickoff_str = ""
@@ -117,13 +110,15 @@ def fetch_football_scores(league_code):
             "away_score":  away.get("score", "-"),
             "home_logo":   (home.get("team") or {}).get("logo"),
             "away_logo":   (away.get("team") or {}).get("logo"),
-            "state":       state,        # "pre" | "in" | "post"
+            "state":       state,        
+
             "completed":   completed,
-            "detail":      detail,       # "45'" / "HT" / "FT" / ""
-            "kickoff":     kickoff_str,  # "15:00" for upcoming
+            "detail":      detail,       
+
+            "kickoff":     kickoff_str,  
+
         })
     return matches
-
 
 def fetch_form_for_league(league_code):
     """
@@ -148,7 +143,6 @@ def fetch_form_for_league(league_code):
     except Exception:
         pass
 
-    # If the range query returned nothing, fall back to week-by-week
     if not all_events:
         for weeks_ago in range(10):
             d = today - timedelta(weeks=weeks_ago)
@@ -160,7 +154,6 @@ def fetch_form_for_league(league_code):
             except Exception:
                 continue
 
-    # Sort oldest-first
     try:
         all_events.sort(key=lambda e: e.get("date", ""))
     except Exception:
@@ -209,7 +202,6 @@ def fetch_form_for_league(league_code):
 
     return {name: results[-5:] for name, results in form_map.items()}
 
-
 def fetch_table(league_code):
     url = f"https://site.api.espn.com/apis/v2/sports/soccer/{league_code}/standings"
     try:
@@ -218,7 +210,6 @@ def fetch_table(league_code):
     except Exception:
         return []
 
-    # Fetch form data for all teams in one batch of calls
     form_map = fetch_form_for_league(league_code)
 
     table = []
@@ -286,7 +277,6 @@ def fetch_table(league_code):
     table.sort(key=lambda r: r.get("position", 999))
     return table
 
-
 def fetch_speedway_scores():
     api_url = "https://www.britishspeedway.co.uk/wp-json/wp/v2/posts?per_page=10"
     try:
@@ -302,8 +292,6 @@ def fetch_speedway_scores():
         if "-" in title and any(c.isdigit() for c in title):
             results.append(title)
     return results[:15]
-
-# ── App ────────────────────────────────────────────────────────────────────
 
 class SportsModeApp:
     def __init__(self):
@@ -328,8 +316,6 @@ class SportsModeApp:
 
         self.show_main_menu()
 
-    # ── Frame control ──────────────────────────────────────────────────────
-
     def clear_frame(self):
         self.stop_loading()
         if self._refresh_job is not None:
@@ -343,8 +329,6 @@ class SportsModeApp:
 
     def shutdown_pc(self):
         os.system("shutdown /s /t 0")
-
-    # ── Loading indicator ─────────────────────────────────────────────────
 
     def start_loading(self, parent):
         self.stop_loading()
@@ -383,8 +367,6 @@ class SportsModeApp:
                 pass
             self._loading_label = None
 
-    # ── Main menu ─────────────────────────────────────────────────────────
-
     def show_main_menu(self):
         self.clear_frame()
         frame = tk.Frame(self.container, bg=BG)
@@ -416,8 +398,6 @@ class SportsModeApp:
         gbtn(grid, "🏍\nSpeedway",    AMBER, AMBER_HOV, lambda: self.show_scores("speedway"), 0, 1)
         gbtn(grid, "⏻   Turn Off", RED,   RED_HOV,   self.confirm_shutdown,                1, 0, colspan=2)
 
-    # ── League picker ─────────────────────────────────────────────────────
-
     def show_football_leagues(self):
         self.clear_frame()
         frame = tk.Frame(self.container, bg=BG)
@@ -427,7 +407,6 @@ class SportsModeApp:
         tk.Label(frame, text="Choose a League", fg="white", bg=BG,
                  font=("Segoe UI", 48, "bold")).pack(pady=(10, 16))
 
-        # 2-column grid for league buttons
         grid = tk.Frame(frame, bg=BG)
         grid.pack(expand=True, fill="both", padx=20)
         grid.columnconfigure(0, weight=1)
@@ -445,7 +424,6 @@ class SportsModeApp:
             b.bind("<Enter>", lambda e, b=b: b.config(bg=BLUE_HOV))
             b.bind("<Leave>", lambda e, b=b: b.config(bg=BLUE))
 
-        # If odd number of leagues, last row gets an extra empty slot filled by back button
         back_row = (len(league_items) + 1) // 2
         grid.rowconfigure(back_row, weight=1)
         back = tk.Button(grid, text="← Back", bg=GREY, fg="white",
@@ -455,8 +433,6 @@ class SportsModeApp:
         back.grid(row=back_row, column=0, columnspan=2, sticky="nsew", padx=12, pady=12)
         back.bind("<Enter>", lambda e: back.config(bg=GREY_HOV))
         back.bind("<Leave>", lambda e: back.config(bg=GREY))
-
-    # ── Football submenu ──────────────────────────────────────────────────
 
     def show_football_submenu(self, league_code):
         self.current_league = league_code
@@ -493,8 +469,6 @@ class SportsModeApp:
         gbtn("← Back",               GREY, GREY_HOV,
              self.show_football_leagues,                        1, 0, colspan=2)
 
-    # ── Scores / Fixtures screen ──────────────────────────────────────────
-
     def show_scores(self, mode, league=None):
         self.mode = mode
         self.current_league = league
@@ -507,20 +481,16 @@ class SportsModeApp:
         tk.Label(frame, text=title, fg="white", bg=BG,
                  font=("Segoe UI", 44, "bold")).pack(pady=(0, 10))
 
-        # Back button anchored to bottom FIRST so it's never pushed off screen
         back_bar = tk.Frame(frame, bg=BG)
         back_bar.pack(side="bottom", fill="x", pady=14)
         styled_btn(back_bar, "← Back", GREY, GREY_HOV,
                    self.show_main_menu, **BTN_SMALL).pack()
 
-        # scores_box fills whatever space remains between title and back button
         self.scores_box = tk.Frame(frame, bg=BG)
         self.scores_box.pack(expand=True, fill="both", padx=10)
 
         self.start_loading(self.scores_box)
         self.update_scores()
-
-    # ── League table screen ───────────────────────────────────────────────
 
     def show_table(self, league_code):
         self.clear_frame()
@@ -622,7 +592,7 @@ class SportsModeApp:
                             dot_fg = "white"
                             letter = ch
                         else:
-                            # Empty slot — dim outline only
+
                             dot_bg = bg
                             dot_fg = "#374151"
                             letter = "–"
@@ -655,8 +625,6 @@ class SportsModeApp:
 
         threading.Thread(target=load_table, daemon=True).start()
 
-    # ── Refresh logic ─────────────────────────────────────────────────────
-
     def update_scores(self):
         threading.Thread(target=self.load_scores, daemon=True).start()
 
@@ -667,8 +635,6 @@ class SportsModeApp:
         elif self.mode == "speedway":
             lines = fetch_speedway_scores()
             self.root.after(0, lambda: self.display_speedway(lines))
-
-    # ── Display helpers ───────────────────────────────────────────────────
 
     def display_matches(self, matches):
         self.stop_loading()
@@ -688,10 +654,10 @@ class SportsModeApp:
 
                 state = m.get("state", "post")
 
-                # Card background — subtle tint for live games
                 if state == "in":
                     card_bg  = "#1a1f2e"
-                    border   = "#3b82f6"   # blue glow for live
+                    border   = "#3b82f6"   
+
                 else:
                     card_bg  = "#111827"
                     border   = "#2d3748"
@@ -699,14 +665,15 @@ class SportsModeApp:
                 card = tk.Frame(self.scores_box, bg=card_bg,
                                 highlightbackground=border, highlightthickness=2)
                 card.grid(row=grid_row, column=grid_col, sticky="nsew", padx=8, pady=8)
-                card.columnconfigure(0, weight=1)  # home
-                card.columnconfigure(1, weight=0)  # score
-                card.columnconfigure(2, weight=1)  # away
+                card.columnconfigure(0, weight=1)  
+
+                card.columnconfigure(1, weight=0)  
+
+                card.columnconfigure(2, weight=1)  
 
                 home_logo = self.get_logo(m["home_logo"]) if m.get("home_logo") else None
                 away_logo = self.get_logo(m["away_logo"]) if m.get("away_logo") else None
 
-                # ── Status badge (top of card) ────────────────────
                 if state == "in":
                     badge_text = f"🔴 LIVE  {m.get('detail', '')}"
                     badge_fg   = "#f87171"
@@ -721,7 +688,6 @@ class SportsModeApp:
                          font=("Segoe UI", 14, "bold")).grid(
                              row=0, column=0, columnspan=3, pady=(8, 0), padx=10, sticky="w")
 
-                # ── Home (right-aligned) ──────────────────────────
                 home_inner = tk.Frame(card, bg=card_bg)
                 home_inner.grid(row=1, column=0, sticky="e", padx=(10, 4), pady=(4, 10))
                 if home_logo:
@@ -729,7 +695,6 @@ class SportsModeApp:
                 tk.Label(home_inner, text=m["home_name"], fg="white", bg=card_bg,
                          font=("Segoe UI", 20, "bold"), anchor="e").pack(side="right")
 
-                # ── Score / kickoff time ──────────────────────────
                 if state == "pre":
                     score_text = "vs"
                     score_fg   = "#94a3b8"
@@ -741,7 +706,6 @@ class SportsModeApp:
                          font=("Segoe UI", 24, "bold"), width=7, anchor="center"
                          ).grid(row=1, column=1, padx=6, pady=(4, 10))
 
-                # ── Away (left-aligned) ───────────────────────────
                 away_inner = tk.Frame(card, bg=card_bg)
                 away_inner.grid(row=1, column=2, sticky="w", padx=(4, 10), pady=(4, 10))
                 if away_logo:
@@ -762,7 +726,7 @@ class SportsModeApp:
             tk.Label(self.scores_box, text="No speedway results available",
                      fg="#9ca3af", bg=BG, font=("Segoe UI", 30)).pack(expand=True)
         else:
-            # 2-column grid for speedway results too
+
             self.scores_box.columnconfigure(0, weight=1)
             self.scores_box.columnconfigure(1, weight=1)
             for idx, line in enumerate(lines):
@@ -780,8 +744,6 @@ class SportsModeApp:
             self.root.after_cancel(self._refresh_job)
         self._refresh_job = self.root.after(REFRESH_TIME, self.update_scores)
 
-    # ── Logo cache ────────────────────────────────────────────────────────
-
     def get_logo(self, url):
         if not url:
             return None
@@ -792,8 +754,6 @@ class SportsModeApp:
             self.logo_cache[url] = logo
         return logo
 
-    # ── Exit / shutdown ───────────────────────────────────────────────────
-
     def confirm_exit(self):
         if messagebox.askyesno("Exit", "Exit Sports Mode?"):
             self.root.destroy()
@@ -803,9 +763,6 @@ class SportsModeApp:
 
     def run(self):
         self.root.mainloop()
-
-
-# ── Entry point ────────────────────────────────────────────────────────────
 
 def main():
     app = SportsModeApp()
