@@ -1,4 +1,4 @@
-# ⚽ Grandad's Sports Mode
+# ⚽ Sports Mode
 
 A fullscreen, touchscreen-friendly sports dashboard for Windows. Built with Python and tkinter, it shows live football scores, fixtures, league tables, and British Speedway results — all pulled from live data, no subscriptions needed.
 
